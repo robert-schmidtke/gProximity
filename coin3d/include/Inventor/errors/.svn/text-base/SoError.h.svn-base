@@ -1,0 +1,77 @@
+/**************************************************************************\
+ *
+ *  This file is part of the Coin 3D visualization library.
+ *  Copyright (C) 1998-2002 by Systems in Motion. All rights reserved.
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public License
+ *  version 2.1 as published by the Free Software Foundation. See the
+ *  file LICENSE.LGPL at the root directory of the distribution for
+ *  more details.
+ *
+ *  If you want to use Coin for applications not compatible with the
+ *  LGPL, please contact SIM to acquire a Professional Edition license.
+ *
+ *  Systems in Motion, Prof Brochs gate 6, 7030 Trondheim, NORWAY
+ *  http://www.sim.no support@sim.no Voice: +47 22114160 Fax: +47 22207097
+ *
+\**************************************************************************/
+
+#ifndef COIN_SOERROR_H
+#define COIN_SOERROR_H
+
+#include <Inventor/SbBasic.h>
+#include <Inventor/SbString.h>
+
+class SoType;
+class SoBase;
+class SoNode;
+class SoPath;
+class SoEngine;
+
+typedef void SoErrorCB(const class SoError * error, void * data);
+
+
+class COIN_DLL_API SoError
+{
+public:
+	static void setHandlerCallback(SoErrorCB * const func, void * const data);
+	static SoErrorCB * getHandlerCallback(void);
+	static void * getHandlerData(void);
+	
+	const SbString & getDebugString(void) const;
+	
+	static SoType getClassTypeId(void);
+	virtual SoType getTypeId(void) const;
+	SbBool isOfType(const SoType type) const;
+	
+	static void post(const char * const format, ...);
+	
+	static SbString getString(const SoNode * const node);
+	static SbString getString(const SoPath * const path);
+	static SbString getString(const SoEngine * const engine);
+	
+	static void initClass(void);
+	static void initClasses(void);
+	
+	virtual ~SoError() { } // Kill g++ compiler warnings.
+	
+protected:
+	static void defaultHandlerCB(const SoError * error, void * userdata);
+	virtual SoErrorCB * getHandler(void * & data) const;
+	void setDebugString(const char * const str);
+	void appendToDebugString(const char * const str);
+	
+	void handleError(void);
+	
+private:
+	static void generateBaseString(SbString & str, const SoBase * const base,
+	                               const char * const what);
+	                               
+	static SoType classTypeId;
+	static SoErrorCB * callback;
+	static void * callbackData;
+	SbString debugstring;
+};
+
+#endif // !COIN_SOERROR_H

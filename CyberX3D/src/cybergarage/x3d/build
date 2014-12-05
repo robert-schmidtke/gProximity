@@ -1,0 +1,11 @@
+#!/bin/sh
+
+bison -ydv --verbose VRML97.y
+mv y.tab.c VRML97.tab.cpp
+mv y.tab.h VRML97.tab.h
+
+flex -I VRML97.l
+mv lex.yy.c VRML97.yy.cpp
+
+rm y.output
+
